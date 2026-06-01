@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Erişim Reddedildi";
+}
+
+<div style="max-width: 600px; margin: 80px auto; text-align: center;">
+    <div class="glass-card">
+        <svg style="width: 80px; height: 80px; fill: var(--danger); margin-bottom: 24px; filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.4));" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        <h2 style="font-size: 32px; margin-bottom: 12px; color: #FCA5A5;">Erişim Reddedildi!</h2>
+        <p class="text-muted" style="line-height: 1.6; margin-bottom: 32px;">
+            Bu sayfayı görüntülemek veya bu işlemi gerçekleştirmek için yetkiniz bulunmamaktadır. Eğer öğrenciyseniz, izlemeye çalıştığınız kursa kayıtlı olduğunuzdan emin olun.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px;">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Kurs Kataloğuna Dön</a>
+            <a href="javascript:history.back()" class="btn btn-secondary">Geri Git</a>
+        </div>
+    </div>
+</div>

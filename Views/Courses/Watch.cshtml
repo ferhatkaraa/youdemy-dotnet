@@ -1,0 +1,77 @@
+@model Youdemy.Models.CourseWatchViewModel
+@{
+    ViewData["Title"] = $"{Model.ActiveLesson.Title} - {Model.Course.Title}";
+}
+
+<!-- Provide CSRF token for AJAX checkmark toggling -->
+@Html.AntiForgeryToken()
+
+<div class="watch-container">
+    
+    <!-- Left Column: Video and Lesson Description -->
+    <div>
+        <div class="video-player-wrapper">
+            <iframe src="@Model.ActiveLesson.VideoUrl?autoplay=0&rel=0" 
+                    title="@Model.ActiveLesson.Title" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
+        </div>
+        
+        <div class="glass-card watch-content-card">
+            <div class="lesson-meta">
+                <span>Ders @Model.ActiveLesson.Order</span>
+                <span>•</span>
+                <span>@Model.Course.Title</span>
+            </div>
+            
+            <h2 class="watch-title">@Model.ActiveLesson.Title</h2>
+            
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 20px; margin-top: 20px;">
+                <p class="watch-desc">@Model.ActiveLesson.Description</p>
+            </div>
+            
+            @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == Youdemy.Models.UserRole.Teacher.ToString())
+            {
+                <div style="margin-top: 24px; display: inline-flex; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); padding: 12px 20px; border-radius: 12px; font-size: 14px; color: var(--text-main);">
+                    💡 <strong>Önizleme Modu:</strong> Şu anda kursu bir eğitmen olarak önizlemektesiniz. İlerleme durumunu işaretlemek sadece öğrenci hesapları için geçerlidir.
+                </div>
+            }
+        </div>
+    </div>
+    
+    <!-- Right Column: Interactive Syllabus Navigation & Progress Tracker -->
+    <div class="syllabus-card glass-card">
+        <div class="syllabus-header">
+            <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--text-main);">@Model.Course.Title</h3>
+            <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Kurs Müfredatı ve İlerleme</p>
+            
+            @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == Youdemy.Models.UserRole.Student.ToString())
+            {
+                <div class="progress-info">
+                    <span id="js-progress-count">@Model.CompletedLessonsCount/@Model.TotalLessonsCount Tamamlandı</span>
+                    <span id="js-progress-percentage" class="progress-value">@Model.ProgressPercentage%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="js-progress-bar-fill" class="progress-bar-fill" style="width: @Model.ProgressPercentage%;"></div>
+                </div>
+            }
+            else
+            {
+                <div style="font-size: 13px; color: var(--text-muted); font-weight: 500;">
+                    Syllabus (Önizleme)
+                </div>
+            }
+        </div>
+        
+        <!-- Invoke ViewComponent to render syllabus schedule list -->
+        @await Component.InvokeAsync("CourseSyllabus", new { courseId = Model.Course.Id, activeLessonId = Model.ActiveLesson.Id })
+        
+        <div style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 16px; margin-top: 16px; text-align: center;">
+            <a asp-action="Details" asp-route-id="@Model.Course.Id" class="btn btn-secondary btn-sm" style="width: 100%;">
+                Kurs Detay Sayfasına Dön
+            </a>
+        </div>
+    </div>
+    
+</div>

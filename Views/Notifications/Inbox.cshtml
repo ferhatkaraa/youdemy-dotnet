@@ -1,0 +1,38 @@
+@model IEnumerable<Youdemy.Models.Notification>
+@{
+    ViewData["Title"] = "Bildirimlerim";
+}
+
+<div class="container" style="max-width: 900px; margin: 40px auto;">
+    <div class="page-header">
+        <h1 class="page-title">Bildirimlerim</h1>
+        <p class="page-desc">Tüm kullanıcı bildirimlerin burada saklanır. Yeni bildirimler bu sayfayı ziyaret ettiğinde okunmuş olarak işaretlenir.</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="glass-card" style="padding: 32px; text-align: center; color: var(--text-muted);">
+            <h3>Henüz bildirim yok</h3>
+            <p style="margin-top: 10px;">Sana gönderilen bildirimler burada görünecektir.</p>
+        </div>
+    }
+    else
+    {
+        <div class="glass-card" style="padding: 0;">
+            @foreach (var notification in Model)
+            {
+                <div style="border-bottom: 1px solid rgba(255,255,255,0.08); padding: 22px 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">@((notification.Sender?.Username) ?? "Sistem")</div>
+                        <small style="color: var(--text-muted);">@notification.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</small>
+                    </div>
+                    <p style="margin: 0 0 8px; color: var(--text-main);">@notification.Message</p>
+                    @if (!notification.IsRead)
+                    {
+                        <span style="display:inline-flex; align-items:center; padding: 4px 10px; border-radius: 999px; background: rgba(14,165,233,0.15); color: #0ea5e9; font-size: 12px;">Okunmadı</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>

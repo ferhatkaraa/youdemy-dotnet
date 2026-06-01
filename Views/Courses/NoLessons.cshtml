@@ -1,0 +1,23 @@
+@model Youdemy.Models.Course
+@{
+    ViewData["Title"] = $"{Model.Title} - Ders Bulunmamaktadır";
+}
+
+<div style="max-width: 600px; margin: 80px auto; text-align: center;">
+    <div class="glass-card" style="padding: 48px;">
+        <svg style="width: 80px; height: 80px; fill: var(--text-muted); margin-bottom: 24px; opacity: 0.5;" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+        </svg>
+        <h2 style="font-size: 28px; margin-bottom: 12px;">Ders Bulunmamaktadır</h2>
+        <p class="text-muted" style="line-height: 1.6; margin-bottom: 32px;">
+            "<strong>@Model.Title</strong>" kursunda henüz yayınlanmış bir ders bulunmamaktadır. Lütfen eğitmenin içerik eklemesini bekleyin.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px;">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Kurs Detaylarına Dön</a>
+            @if (User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == Youdemy.Models.UserRole.Teacher.ToString() && Model.TeacherId == int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value))
+            {
+                <a asp-controller="Lessons" asp-action="Create" asp-route-courseId="@Model.Id" class="btn btn-secondary" style="border-color: var(--primary);">İlk Dersi Ekle</a>
+            }
+        </div>
+    </div>
+</div>

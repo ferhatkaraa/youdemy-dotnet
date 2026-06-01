@@ -1,0 +1,67 @@
+@model Youdemy.Models.SettingsViewModel
+@{
+    ViewData["Title"] = "Ayarlar";
+}
+
+<div style="max-width:720px;margin:40px auto;">
+    <h2>Ayarlar</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <label asp-for="Username"></label>
+            <input asp-for="Username" class="form-control" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DisplayName"></label>
+            <input asp-for="DisplayName" class="form-control" />
+            <span asp-validation-for="DisplayName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ProfileImageUrl"></label>
+            <input asp-for="ProfileImageUrl" class="form-control" />
+            <span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
+            <small class="form-text text-muted">Resim linki (örn. https://...jpg). Bu bağlantı profilinizde görünecektir.</small>
+        </div>
+
+        <hr />
+        <h4>Şifre Değişikliği (isteğe bağlı)</h4>
+
+        <div class="form-group">
+            <label asp-for="CurrentPassword"></label>
+            <input asp-for="CurrentPassword" class="form-control" />
+            <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="NewPassword"></label>
+            <input asp-for="NewPassword" class="form-control" />
+            <span asp-validation-for="NewPassword" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ConfirmPassword"></label>
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+
+        <div style="margin-top:18px;">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

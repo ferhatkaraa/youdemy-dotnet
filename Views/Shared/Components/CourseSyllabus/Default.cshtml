@@ -1,0 +1,41 @@
+@model IEnumerable<Youdemy.Models.Lesson>
+@{
+    var activeLessonId = (int)ViewData["ActiveLessonId"]!;
+    var completedLessonIds = ViewData["CompletedLessonIds"] as HashSet<int> ?? new HashSet<int>();
+    var isStudent = (bool)ViewData["IsStudent"]!;
+}
+
+<ul class="syllabus-list">
+    @foreach (var lesson in Model)
+    {
+        var isCompleted = completedLessonIds.Contains(lesson.Id);
+        var isActive = lesson.Id == activeLessonId;
+        
+        <li id="syllabus-item-@lesson.Id" class="syllabus-item @(isActive ? "active" : "") @(isCompleted ? "completed" : "")" 
+            style="cursor: pointer;" 
+            onclick="window.location.href='@Url.Action("Watch", "Courses", new { id = lesson.CourseId, lessonId = lesson.Id })'">
+            
+            @if (isStudent)
+            {
+                <!-- Custom Interactive Progress Checkbox -->
+                <div class="custom-checkbox js-progress-checkbox @(isCompleted ? "checked" : "")" data-lesson-id="@lesson.Id">
+                    <svg class="custom-checkbox-icon" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                </div>
+            }
+            else
+            {
+                <!-- Non-student Bullet Badges -->
+                <div style="width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--text-muted); flex-shrink: 0;">
+                    @lesson.Order
+                </div>
+            }
+            
+            <div class="syllabus-item-content">
+                <span class="syllabus-item-title">@lesson.Title</span>
+            </div>
+            
+        </li>
+    }
+</ul>

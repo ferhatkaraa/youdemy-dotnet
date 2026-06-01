@@ -1,0 +1,72 @@
+@model IEnumerable<Youdemy.Models.Course>
+@{
+    ViewData["Title"] = "Giriş Paneli - Kurs Kataloğu";
+    var search = ViewData["Search"] as string;
+}
+
+<div class="flex-header" style="flex-direction: column; align-items: center; text-align: center; margin-bottom: 48px;">
+    <h1 class="page-title" style="font-size: 48px; margin-bottom: 12px;">Geleceğinizi Youdemy ile İnşa Edin</h1>
+    <p class="page-desc" style="max-width: 600px; line-height: 1.6;">
+        Bootstrap veya harici hiçbir framework kullanmadan, saf HTML, CSS ve JavaScript'in inanılmaz gücüyle oluşturulmuş premium eğitim platformu.
+    </p>
+</div>
+
+<!-- Custom Glassmorphic Search Form -->
+<form method="get" action="@Url.Action("Index", "Home")" class="search-container">
+    <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input type="text" name="search" value="@search" placeholder="Öğrenmek istediğiniz konuyu arayın (C#, CSS, DOM...)" class="form-control search-input" autocomplete="off" />
+    <button type="submit" class="btn btn-primary btn-sm search-btn">Ara</button>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="glass-card" style="text-align: center; padding: 60px 40px;">
+        <svg style="width: 80px; height: 80px; fill: var(--text-muted); margin-bottom: 20px; opacity: 0.5;" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h-2v-2h4v8zm0-10h-2V5h2v2z"/>
+        </svg>
+        <h3>Aradığınız kriterlere uygun kurs bulunamadı</h3>
+        <p class="text-muted" style="margin-top: 8px;">Farklı kelimeler aramayı deneyebilir veya tüm kursları görmek için aramayı temizleyebilirsiniz.</p>
+        <a asp-action="Index" class="btn btn-secondary" style="margin-top: 24px;">Tüm Kursları Listele</a>
+    </div>
+}
+else
+{
+    <div class="course-grid">
+        @foreach (var course in Model)
+        {
+            <div class="glass-card course-card" onclick="window.location.href='@Url.Action("Details", "Courses", new { id = course.Id })'">
+                    <div class="course-img-wrapper">
+                        <img src="@(string.IsNullOrEmpty(course.ImageUrl) ? "/images/course-default.png" : course.ImageUrl)" alt="@course.Title" style="width:100%;height:160px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.04);" />
+                    </div>
+                
+                <div class="course-meta">
+                    <span class="course-teacher">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--primary);">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        @course.Teacher?.Username
+                    </span>
+                    <span style="font-weight: 500; color: var(--accent);">Eğitmen Kursu</span>
+                </div>
+                
+                <h3 class="course-title">@course.Title</h3>
+                <p class="course-desc">@course.Description</p>
+                
+                <div class="course-footer">
+                    <span class="course-lessons-count">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--accent);">
+                            <path d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"></path>
+                        </svg>
+                        @course.Lessons.Count Ders İçeriği
+                    </span>
+                    
+                    <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.Id" class="btn btn-secondary btn-sm" style="pointer-events: none;">Detaylar</a>
+                </div>
+            </div>
+        }
+    </div>
+}

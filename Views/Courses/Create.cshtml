@@ -1,0 +1,38 @@
+@model Youdemy.Models.CourseCreateEditViewModel
+@{
+    ViewData["Title"] = "Yeni Kurs Oluştur";
+}
+
+<div style="max-width: 680px; margin: 40px auto;">
+    <div class="glass-card">
+        <h2 style="font-size: 28px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; margin-bottom: 24px;">Yeni Eğitim Serisi Oluştur</h2>
+        
+        <form asp-action="Create" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            
+            <div class="form-group">
+                <label asp-for="Title" class="form-label">Kurs Başlığı</label>
+                <input asp-for="Title" class="form-control" placeholder="Örn: Sıfırdan İleri Seviye C# Programlama" required />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="Description" class="form-label">Kurs Açıklaması</label>
+                <textarea asp-for="Description" class="form-control" rows="5" placeholder="Kurs hakkında detaylı bilgi, kazanımlar ve hedef kitle..." required></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="ImageUrl" class="form-label">Kapak Görseli URL'si (İsteğe Bağlı)</label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="Örn: /images/csharp.png veya harici bir URL" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                <span style="font-size: 12px; color: var(--text-muted); margin-top: 6px; display: block;">Boş bırakılırsa sistem varsayılan bir görsel atayacaktır.</span>
+            </div>
+            
+            <div style="display: flex; gap: 16px; margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 24px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; height: 48px;">Kursu Yayınla</button>
+                <a asp-action="Manage" class="btn btn-secondary" style="height: 48px;">Vazgeç</a>
+            </div>
+        </form>
+    </div>
+</div>

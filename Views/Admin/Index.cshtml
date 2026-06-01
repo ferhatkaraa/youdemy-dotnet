@@ -1,0 +1,169 @@
+@model Youdemy.Models.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Paneli";
+}
+
+<div class="container" style="max-width: 1200px; margin: 40px auto;">
+    <div class="d-flex justify-content-between align-items-start mb-4 gap-3 flex-wrap">
+        <div>
+            <h2 class="mb-1">Admin Paneli</h2>
+            <p class="text-muted mb-0">Tüm kullanıcıları tek bir tabloda görüntüleyin, hızlıca filtreleyin ve hesap yönetimini kolaylaştırın.</p>
+        </div>
+        <div class="btn-toolbar gap-2">
+            <a asp-action="CreateUser" class="btn btn-primary">Yeni Kullanıcı Oluştur</a>
+            <a asp-action="SendNotification" class="btn btn-outline-secondary">Bildirim Gönder</a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row gy-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Kullanıcı Ara</label>
+                    <input id="userSearch" type="text" class="form-control" placeholder="Kullanıcı adı, e-posta veya rol..." oninput="filterUsers()" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Rol</label>
+                    <select id="roleFilter" class="form-select" onchange="filterUsers()">
+                        <option value="All">Tümü</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Teacher">Öğretmen</option>
+                        <option value="Student">Öğrenci</option>
+                        <option value="PendingTeacher">Onay Bekleyen Öğretmen</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Durum</label>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <span class="badge bg-success">Onaylı Öğretmen: @Model.Teachers.Count()</span>
+                        <span class="badge bg-warning text-dark">Bekleyen Öğretmen: @Model.PendingTeachers.Count()</span>
+                        <span class="badge bg-info text-dark">Öğrenci: @Model.Students.Count()</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm overflow-hidden">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0">Kullanıcılar</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="usersTable">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 15%;">Kullanıcı Adı</th>
+                        <th style="width: 20%;">E-posta</th>
+                        <th style="width: 10%;">Rol</th>
+                        <th style="width: 15%;">Onay Durumu</th>
+                        <th style="width: 20%;">Oluşturma Tarihi</th>
+                        <th style="width: 15%;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.AllUsers)
+                    {
+                        <tr data-role="@user.Role" data-approved="@(user.Role == Youdemy.Models.UserRole.Teacher ? user.IsApproved.ToString().ToLower() : "true")">
+                            <td>@user.Id</td>
+                            <td><strong>@user.Username</strong></td>
+                            <td>@user.Email</td>
+                            <td>@user.Role</td>
+                            <td>
+                                @if (user.Role == Youdemy.Models.UserRole.Teacher)
+                                {
+                                    @if (user.IsApproved)
+                                    {
+                                        <span class="badge bg-success">Onaylı</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Beklemede</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@user.Role</span>
+                                }
+                            </td>
+                            <td>@user.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                @if (user.Role == Youdemy.Models.UserRole.Teacher && !user.IsApproved)
+                                {
+                                    <form asp-action="ApproveTeacher" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <button type="submit" class="btn btn-sm btn-success">Onayla</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled>İşlem Yok</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row gy-4 mt-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6>Kısa Bakış</h6>
+                    <p class="mb-1"><strong>@Model.AllUsers.Count()</strong> toplam kullanıcı</p>
+                    <p class="mb-1"><strong>@Model.Students.Count()</strong> öğrenci</p>
+                    <p class="mb-1"><strong>@Model.Teachers.Count()</strong> onaylı öğretmen</p>
+                    <p class="mb-0"><strong>@Model.PendingTeachers.Count()</strong> onay bekleyen öğretmen</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6>Yönetim Notları</h6>
+                    <p class="text-muted">Onay bekleyen öğretmen hesapları burada listelenir. Yönetici olarak hızlıca onay verebilir ve bildirim gönderim sayfasına geçiş yapabilirsiniz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterUsers() {
+            const search = document.getElementById('userSearch').value.toLowerCase();
+            const role = document.getElementById('roleFilter').value;
+            const rows = document.querySelectorAll('#usersTable tbody tr');
+
+            rows.forEach(row => {
+                const username = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[2].textContent.toLowerCase();
+                const roleValue = row.getAttribute('data-role');
+                const approved = row.getAttribute('data-approved');
+                let visible = true;
+
+                if (search) {
+                    visible = username.includes(search) || email.includes(search) || roleValue.toLowerCase().includes(search);
+                }
+
+                if (visible && role !== 'All') {
+                    if (role === 'PendingTeacher') {
+                        visible = roleValue === 'Teacher' && approved === 'false';
+                    } else {
+                        visible = roleValue === role;
+                    }
+                }
+
+                row.style.display = visible ? '' : 'none';
+            });
+        }
+    </script>
+}
