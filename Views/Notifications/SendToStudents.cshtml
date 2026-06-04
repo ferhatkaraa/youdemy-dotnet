@@ -3,42 +3,47 @@
     ViewData["Title"] = "Öğrenciler İçin Bildirim Gönder";
 }
 
-<div class="container" style="max-width: 900px; margin: 40px auto;">
-    <div class="card shadow-sm p-4">
-        <h2>Öğrenciler İçin Bildirim Gönder</h2>
-        <p class="text-muted">Öğrencilerinize toplu veya seçili öğrencilere bireysel bildirim gönderebilirsiniz.</p>
+<div class="container" style="max-width: 720px; margin: 40px auto;">
+    <div class="glass-card">
+        <h2 style="font-size: 28px; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; margin-bottom: 8px;">Öğrenciler İçin Bildirim Gönder</h2>
+        <p class="page-desc" style="margin-bottom: 24px;">Öğrencilerinize toplu veya seçili öğrencilere bireysel bildirim gönderebilirsiniz.</p>
 
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success">@TempData["SuccessMessage"]</div>
         }
 
-        <form asp-action="SendToStudents" method="post">
+        <form asp-action="SendToStudents" method="post" novalidate>
             @Html.AntiForgeryToken()
             @if (Model.SelectedCourseId.HasValue && !string.IsNullOrEmpty(Model.CourseTitle))
-        {
-            <div class="alert alert-info">
-                Bu bildirim <strong>@Model.CourseTitle</strong> kursuna kayıtlı öğrencilere gönderilecektir.
-            </div>
-            <input type="hidden" asp-for="SelectedCourseId" />
-        }
-        <div class="mb-3">
+            {
+                <div style="background: rgba(99,102,241,0.1); border-left: 4px solid var(--primary); padding: 16px; border-radius: var(--border-radius-sm); margin-bottom: 24px; color: var(--text-main); font-size: 15px;">
+                    Bu bildirim <strong>@Model.CourseTitle</strong> kursuna kayıtlı öğrencilere gönderilecektir.
+                </div>
+                <input type="hidden" asp-for="SelectedCourseId" />
+            }
+            
+            <div class="form-group" style="margin-bottom: 24px;">
                 <label asp-for="SelectedStudentIds" class="form-label">Öğrencileri Seçin</label>
-                <select asp-for="SelectedStudentIds" class="form-select" multiple size="8">
+                <select asp-for="SelectedStudentIds" class="form-control" multiple size="6" style="height: auto; min-height: 150px; padding: 8px;">
                     @foreach (var student in Model.AvailableStudents)
                     {
-                        <option value="@student.Id">@student.Username (@student.Email)</option>
+                        <option value="@student.Id" style="padding: 8px 12px; border-radius: var(--border-radius-sm); margin-bottom: 2px;">@student.Username (@student.Email)</option>
                     }
                 </select>
-                <div class="form-text">Seçim yapılmazsa seçili kursun veya tüm kurslarınızın öğrencilere gönderilecektir.</div>
+                <div class="small text-muted" style="margin-top: 8px; font-size: 12px;">Seçim yapılmazsa seçili kursun veya tüm kurslarınızın öğrencilerine gönderilecektir. Çoklu seçim için Ctrl tuşuna basılı tutun.</div>
             </div>
-            <div class="mb-3">
-                <label asp-for="Message" class="form-label"></label>
-                <textarea asp-for="Message" class="form-control" rows="5"></textarea>
+            
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label asp-for="Message" class="form-label">Bildirim Mesajı</label>
+                <textarea asp-for="Message" class="form-control" rows="5" placeholder="Göndermek istediğiniz mesajı buraya yazın..." style="resize: vertical;"></textarea>
                 <span asp-validation-for="Message" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Bildirim Gönder</button>
-            <a asp-controller="Courses" asp-action="Manage" class="btn btn-secondary ms-2">Geri</a>
+            
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-primary">Bildirim Gönder</button>
+                <a asp-controller="Courses" asp-action="Manage" class="btn" style="background: rgba(148,163,184,0.15); color: var(--text-main); text-decoration: none; padding: 12px 24px; border-radius: var(--border-radius-md); font-weight: 500;">Geri</a>
+            </div>
         </form>
     </div>
 </div>

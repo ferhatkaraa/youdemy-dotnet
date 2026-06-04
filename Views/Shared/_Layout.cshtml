@@ -1,116 +1,36 @@
-@using Microsoft.EntityFrameworkCore
-@inject Youdemy.Data.YoudemyDbContext LayoutDbContext
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Youdemy</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem("youdemy-theme") || "dark";
-            document.documentElement.setAttribute("data-theme", savedTheme);
-        })();
-    </script>
 </head>
 <body>
     <header>
         <div class="nav-container">
-            <a class="logo" asp-area="" asp-controller="Home" asp-action="Index">
-                Youdemy<span class="logo-dot"></span>
-            </a>
+            <!-- Left Group: Logo & Discover -->
+            <div class="header-left">
+                <a class="logo" asp-area="" asp-controller="Home" asp-action="Index">
+                    Youdemy<span class="logo-dot"></span>
+                </a>
+                <div class="nav-divider"></div>
+                <a class="nav-discover-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")" 
+                   asp-controller="Home" asp-action="Index">Keşfet</a>
+            </div>
+
+            <!-- Middle Group: Responsive Search Bar -->
+            <form method="get" asp-controller="Home" asp-action="Index" class="header-search-form">
+                <div class="header-search-wrapper">
+                    <svg class="header-search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="search" value="@ViewData["Search"]" placeholder="Kurs arayın (C#, CSS, DOM...)" class="header-search-input" autocomplete="off" />
+                </div>
+            </form>
             
-            <nav>
-                <ul class="nav-links">
-                    <li>
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")" 
-                           asp-controller="Home" asp-action="Index">Tüm Kurslar</a>
-                    </li>
-                    
-                    <li>
-                        <button id="js-theme-toggle" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border-radius: 50%; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03);" title="Temayı Değiştir">
-                            <!-- Sun Icon (shows in dark theme to switch to light) -->
-                            <svg class="theme-icon-sun" width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="color: #FBBF24;">
-                                <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
-                            </svg>
-                            <!-- Moon Icon (shows in light theme to switch to dark) -->
-                            <svg class="theme-icon-moon" width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="color: #8B5CF6; display: none;">
-                                <path d="M12.3 22h-.1c-5.5 0-10-4.5-10-10 0-4.8 3.5-8.9 8.2-9.8.5-.1 1 .2 1.2.7.2.5 0 1.1-.4 1.4-2.8 2.2-4.2 5.8-3.4 9.4.8 3.5 3.7 6.2 7.3 6.9 1 .2 1.9.1 2.8-.2.5-.2 1.1 0 1.4.4.3.4.3 1 0 1.4-1.8 2.3-4.6 3.6-7.4 3.6z"/>
-                            </svg>
-                        </button>
-                    </li>
-                    
-                    @if (User.Identity?.IsAuthenticated ?? false)
-                    {
-                        var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-                        var userId = 0;
-                        var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-                        if (idClaim != null && int.TryParse(idClaim.Value, out var parsedUserId))
-                        {
-                            userId = parsedUserId;
-                        }
-                        var unreadCount = userId > 0 ? await LayoutDbContext.Notifications.CountAsync(n => n.RecipientId == userId && !n.IsRead) : 0;
-
-                        if (role == Youdemy.Models.UserRole.Student.ToString())
-                        {
-                            <li>
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Courses" && ViewContext.RouteData.Values["action"]?.ToString() == "MyCourses" ? "active" : "")" asp-controller="Courses" asp-action="MyCourses">Eğitimlerim</a>
-                            </li>
-                        }
-
-                        <li>
-                            <a class="nav-link" asp-controller="Notifications" asp-action="Inbox" title="Bildirimler" style="position: relative;">
-                                <span style="display:inline-flex; align-items:center; gap:8px;">
-                                    <span style="font-size:18px;">🔔</span>
-                                    Bildirimler
-                                </span>
-                                @if (unreadCount > 0)
-                                {
-                                    <span style="position:absolute; top:4px; right:0; width:20px; height:20px; font-size:12px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#ef4444; color:#fff;">@unreadCount</span>
-                                }
-                            </a>
-                        </li>
-
-                        if (role == Youdemy.Models.UserRole.Teacher.ToString())
-                        {
-                            <li>
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Courses" && ViewContext.RouteData.Values["action"]?.ToString() == "Manage" ? "active" : "")" 
-                                   asp-controller="Courses" asp-action="Manage">Kurslarımı Yönet</a>
-                            </li>
-                        }
-                        if (role == Youdemy.Models.UserRole.Admin.ToString())
-                        {
-                            <li>
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index">Admin Paneli</a>
-                            </li>
-                        }
-                        
-                        <li class="nav-link" style="color: var(--text-main); font-weight: 600; display:flex; align-items:center; gap:10px;">
-                            @{ var profileImage = User.FindFirst("profileImage")?.Value; var displayName = User.FindFirst("displayName")?.Value; }
-                            <a asp-controller="Settings" asp-action="Edit" style="display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none;">
-                                <img src="@(string.IsNullOrEmpty(profileImage) ? "/images/user-default.png" : profileImage)" alt="Profil" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.06);" />
-                                <span>
-                                    @(!string.IsNullOrEmpty(displayName) ? displayName : User.Identity.Name)
-                                    <div style="font-size:12px;color:var(--text-muted);">@(role == Youdemy.Models.UserRole.Teacher.ToString() ? "Eğitmen" : "Öğrenci")</div>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="btn btn-secondary btn-sm" asp-controller="Auth" asp-action="Logout">Çıkış Yap</a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li>
-                            <a class="nav-link" asp-controller="Auth" asp-action="Login">Giriş Yap</a>
-                        </li>
-                        <li>
-                            <a class="btn btn-primary btn-sm" asp-controller="Auth" asp-action="Register">Kayıt Ol</a>
-                        </li>
-                    }
-                </ul>
-            </nav>
+            @await Component.InvokeAsync("HeaderNav")
         </div>
     </header>
 

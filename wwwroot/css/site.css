@@ -10,31 +10,7 @@
     --border-radius-md: 12px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Dark theme variables by default */
-    --bg-dark: #070913;
-    --bg-card: rgba(15, 23, 42, 0.65);
-    --bg-card-hover: rgba(30, 41, 59, 0.8);
-    --bg-input: rgba(15, 23, 42, 0.8);
-    --bg-header: rgba(7, 9, 19, 0.75);
-    --text-main: #F8FAFC;
-    --text-muted: #94A3B8;
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-glow: rgba(99, 102, 241, 0.2);
-    --shadow-md: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 4px 12px -5px rgba(0, 0, 0, 0.3);
-    --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.25);
-    --glass-glow: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-    --alert-success-bg: rgba(16, 185, 129, 0.1);
-    --alert-success-text: #A7F3D0;
-    --alert-success-border: rgba(16, 185, 129, 0.2);
-    --alert-danger-bg: rgba(239, 68, 68, 0.1);
-    --alert-danger-text: #FCA5A5;
-    --alert-danger-border: rgba(239, 68, 68, 0.2);
-    --syllabus-item-bg: rgba(255, 255, 255, 0.02);
-    --syllabus-item-hover: rgba(255, 255, 255, 0.04);
-}
-
-html[data-theme="light"] {
-    /* Light theme variables override */
+    /* Light theme variables default */
     --bg-dark: #F1F5F9;
     --bg-card: rgba(255, 255, 255, 0.75);
     --bg-card-hover: rgba(255, 255, 255, 0.95);
@@ -108,6 +84,91 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 32px;
+}
+
+/* Header Layout Structure */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.header-right {
+    flex-shrink: 0;
+}
+
+/* Vertical Divider between Logo and Keşfet */
+.nav-divider {
+    width: 1px;
+    height: 18px;
+    background-color: var(--border-color);
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+/* Keşfet (Discover) Link Styling */
+.nav-discover-link {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.nav-discover-link:hover, .nav-discover-link.active {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* Responsive Header Search Bar Styling */
+.header-search-form {
+    flex: 1;
+    max-width: 440px;
+    margin: 0 12px;
+}
+
+.header-search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.header-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: var(--transition);
+}
+
+.header-search-input {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 8px 16px 8px 40px;
+    font-size: 14px;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition);
+    height: 38px;
+}
+
+.header-search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--bg-card-hover);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+}
+
+.header-search-input:focus + .header-search-icon {
+    color: var(--primary);
 }
 
 .logo {
@@ -120,6 +181,7 @@ header {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 .logo-dot {
@@ -133,20 +195,122 @@ header {
 
 .nav-links {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     align-items: center;
     list-style: none;
+    flex-shrink: 0;
 }
-
 .nav-link {
     font-size: 15px;
     font-weight: 500;
     color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: var(--transition);
+    flex-shrink: 0;
 }
 
 .nav-link:hover, .nav-link.active {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* Modern Rounded Navigation Icon Buttons */
+.nav-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.nav-icon-btn:hover {
     color: var(--text-main);
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-glow);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.nav-icon-btn.active {
+    color: var(--text-main);
+    background: rgba(99, 102, 241, 0.08);
+    border-color: var(--primary);
+}
+
+.nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--danger);
+    color: #fff;
+    box-shadow: 0 0 8px var(--danger);
+}
+
+.nav-logout-btn {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+}
+
+.nav-logout-btn:hover {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* User Profile in Header */
+.nav-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-main);
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid transparent;
+}
+
+.nav-user-profile:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-color);
+}
+
+.nav-user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+    transition: var(--transition);
+}
+
+.nav-user-profile:hover .nav-user-avatar {
+    border-color: var(--accent);
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
 }
 
 /* Buttons */
@@ -271,6 +435,15 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.course-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .course-img-svg {
@@ -362,6 +535,38 @@ main {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+/* File Upload Custom Styling */
+input[type="file"].form-control {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed var(--border-color);
+}
+
+input[type="file"].form-control::file-selector-button {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    margin-right: 16px;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+input[type="file"].form-control::file-selector-button:hover {
+    opacity: 0.9;
+}
+
+input[type="file"].form-control::file-selector-button:active {
+    transform: scale(0.97);
 }
 
 .form-select {
@@ -671,9 +876,11 @@ footer {
 }
 
 .page-desc {
-    color: var(--text-muted);
-    margin-top: 8px;
+    color: var(--text-main);
+    opacity: 0.8;
+    margin-top: 12px;
     font-size: 16px;
+    line-height: 1.6;
 }
 
 /* Alert notifications */

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -272,11 +273,32 @@ namespace Youdemy.Controllers
             }
 
             var teacherId = GetUserId();
+            string imageUrl = "/images/course-default.png";
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            {
+                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "courses");
+                if (!Directory.Exists(uploadsDir))
+                {
+                    Directory.CreateDirectory(uploadsDir);
+                }
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+                var filePath = Path.Combine(uploadsDir, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ImageFile.CopyToAsync(stream);
+                }
+                imageUrl = "/uploads/courses/" + fileName;
+            }
+            else if (!string.IsNullOrWhiteSpace(model.ImageUrl))
+            {
+                imageUrl = model.ImageUrl;
+            }
+
             var course = new Course
             {
                 Title = model.Title,
                 Description = model.Description,
-                ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? "/images/course-default.png" : model.ImageUrl,
+                ImageUrl = imageUrl,
                 TeacherId = teacherId,
                 CreatedAt = DateTime.UtcNow
             };
@@ -344,7 +366,26 @@ namespace Youdemy.Controllers
 
             course.Title = model.Title;
             course.Description = model.Description;
-            course.ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? "/images/course-default.png" : model.ImageUrl;
+
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            {
+                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "courses");
+                if (!Directory.Exists(uploadsDir))
+                {
+                    Directory.CreateDirectory(uploadsDir);
+                }
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+                var filePath = Path.Combine(uploadsDir, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ImageFile.CopyToAsync(stream);
+                }
+                course.ImageUrl = "/uploads/courses/" + fileName;
+            }
+            else if (!string.IsNullOrWhiteSpace(model.ImageUrl))
+            {
+                course.ImageUrl = model.ImageUrl;
+            }
 
             _context.Entry(course).State = EntityState.Modified;
             await _context.SaveChangesAsync();

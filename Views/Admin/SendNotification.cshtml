@@ -4,99 +4,87 @@
 }
 
 <div class="container" style="max-width: 980px; margin: 40px auto;">
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 32px;">
+        <div>
+            <h1 class="page-title">Bildirim Gönder</h1>
+            <p class="page-desc">Seçili role toplu ya da bireysel bildirim gönderin. Hedef kitleyi belirleyin ve mesajınızı hızlıca yönetin.</p>
+        </div>
+        <a asp-action="Index" class="btn" style="background: rgba(148,163,184,0.15); color: var(--text-main); text-decoration: none; padding: 12px 24px; border-radius: var(--border-radius-md); font-weight: 500;">Kullanıcı Yönetimine Dön</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <form asp-action="SendNotification" method="post">
+        @Html.AntiForgeryToken()
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 24px;">
+            <div class="glass-card" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
-                    <h2 class="mb-1">Bildirim Gönder</h2>
-                    <p class="text-muted mb-0">Seçili role toplu ya da bireysel bildirim gönderin. Hedef kitleyi belirleyin ve mesajınızı hızlıca yönetin.</p>
+                    <h5 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Hedef Grup</h5>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Bildirim hangi role gönderilecek?</p>
+                    
+                    <select asp-for="RecipientRole" class="form-select" onchange="this.form.submit()" style="width: 100%; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); background-color: var(--bg-input); color: var(--text-main); padding: 12px 16px; font-size: 15px;">
+                        @if (Model.RecipientRole == Youdemy.Models.UserRole.Student)
+                        {
+                            <option value="Student" selected>Öğrenciler</option>
+                        }
+                        else
+                        {
+                            <option value="Student">Öğrenciler</option>
+                        }
+
+                        @if (Model.RecipientRole == Youdemy.Models.UserRole.Teacher)
+                        {
+                            <option value="Teacher" selected>Öğretmenler</option>
+                        }
+                        else
+                        {
+                            <option value="Teacher">Öğretmenler</option>
+                        }
+                    </select>
+                    <span asp-validation-for="RecipientRole" class="text-danger"></span>
                 </div>
-                <a asp-action="Index" class="btn btn-outline-secondary">Kullanıcı Yönetimine Dön</a>
+
+                <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                    <p class="small text-muted" style="margin-bottom: 6px; font-size: 12px;">Seçili rolün toplam kullanıcı sayısı</p>
+                    <span style="background: rgba(99,102,241,0.15); color: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">@Model.AvailableRecipients.Count() kullanıcı</span>
+                </div>
             </div>
 
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-            }
+            <div class="glass-card" style="padding: 24px;">
+                <h5 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Alıcı Seçimi</h5>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Aşağıdan bireysel kullanıcı seçebilir veya boş bırakarak tüm gruba toplu gönderim yapabilirsiniz.</p>
 
-            <form asp-action="SendNotification" method="post">
-                @Html.AntiForgeryToken()
-
-                <div class="row gy-4">
-                    <div class="col-lg-4">
-                        <div class="card bg-light border-0 h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Hedef Grup</h5>
-                                <p class="text-muted">Bildirim hangi role gönderilecek?</p>
-                                <select asp-for="RecipientRole" class="form-select" onchange="this.form.submit()">
-                                    @if (Model.RecipientRole == Youdemy.Models.UserRole.Student)
-                                    {
-                                        <option value="Student" selected>Öğrenciler</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="Student">Öğrenciler</option>
-                                    }
-
-                                    @if (Model.RecipientRole == Youdemy.Models.UserRole.Teacher)
-                                    {
-                                        <option value="Teacher" selected>Öğretmenler</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="Teacher">Öğretmenler</option>
-                                    }
-                                </select>
-                                <span asp-validation-for="RecipientRole" class="text-danger"></span>
-
-                                <div class="mt-4">
-                                    <p class="small text-muted mb-1">Seçili kullanıcı sayısı</p>
-                                    <div class="badge bg-primary fs-6">@Model.AvailableRecipients.Count() kullanıcı</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-8">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Alıcı Seçimi</h5>
-                                <p class="text-muted">Aşağıdan bireysel kullanıcı seçebilir veya boş bırakarak seçili role toplu gönderim yapabilirsiniz.</p>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Alıcıları Seç</label>
-                                    <select asp-for="SelectedRecipientIds" class="form-select" multiple size="8">
-                                        @foreach (var user in Model.AvailableRecipients)
-                                        {
-                                            <option value="@user.Id">@user.Username (@user.Email)</option>
-                                        }
-                                    </select>
-                                </div>
-
-                                <div class="small text-muted">Seçim yapılmadığında tüm seçili role ait kullanıcılara gönderilir.</div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Alıcıları Seç</label>
+                    <select asp-for="SelectedRecipientIds" class="form-control" multiple size="6" style="height: auto; min-height: 150px; padding: 8px;">
+                        @foreach (var user in Model.AvailableRecipients)
+                        {
+                            <option value="@user.Id" style="padding: 8px 12px; border-radius: var(--border-radius-sm); margin-bottom: 2px;">@user.Username (@user.Email)</option>
+                        }
+                    </select>
                 </div>
-
-                <div class="card border-0 shadow-sm mt-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Mesaj İçeriği</h5>
-                        <div class="mb-3">
-                            <label asp-for="Message" class="form-label"></label>
-                            <textarea asp-for="Message" class="form-control" rows="6" placeholder="Göndermek istediğiniz mesajı buraya yazın..."></textarea>
-                            <span asp-validation-for="Message" class="text-danger"></span>
-                        </div>
-                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
-                            <div class="text-muted">Mesaj maksimum 1000 karakter olabilir.</div>
-                            <div>
-                                <button type="submit" class="btn btn-primary">Bildirim Gönder</button>
-                                <a asp-action="Index" class="btn btn-secondary ms-2">İptal</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+                <div class="small text-muted" style="font-size: 12px;">Seçim yapılmadığında tüm gruba gönderilir. Çoklu seçim için Ctrl tuşuna basılı tutun.</div>
+            </div>
         </div>
-    </div>
+
+        <div class="glass-card" style="padding: 24px;">
+            <h5 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600;">Mesaj İçeriği</h5>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <textarea asp-for="Message" class="form-control" rows="5" placeholder="Göndermek istediğiniz mesajı buraya yazın..." style="resize: vertical;"></textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <span style="color: var(--text-muted); font-size: 13px;">Mesaj maksimum 1000 karakter olabilir.</span>
+                <div style="display: flex; gap: 12px;">
+                    <button type="submit" class="btn btn-primary">Bildirim Gönder</button>
+                    <a asp-action="Index" class="btn" style="background: rgba(148,163,184,0.15); color: var(--text-main); text-decoration: none; padding: 12px 24px; border-radius: var(--border-radius-md); font-weight: 500;">İptal</a>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>

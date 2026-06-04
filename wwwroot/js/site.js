@@ -94,33 +94,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Setup Theme Toggling Logic
-    const themeToggleBtn = document.getElementById("js-theme-toggle");
-    if (themeToggleBtn) {
-        const sunIcon = themeToggleBtn.querySelector(".theme-icon-sun");
-        const moonIcon = themeToggleBtn.querySelector(".theme-icon-moon");
-        
-        // Read active theme (initialized by head script)
-        const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
-        updateThemeIcons(currentTheme);
-        
-        themeToggleBtn.addEventListener("click", () => {
-            const activeTheme = document.documentElement.getAttribute("data-theme");
-            const targetTheme = activeTheme === "light" ? "dark" : "light";
-            
-            document.documentElement.setAttribute("data-theme", targetTheme);
-            localStorage.setItem("youdemy-theme", targetTheme);
-            updateThemeIcons(targetTheme);
-        });
-        
-        function updateThemeIcons(theme) {
-            if (theme === "light") {
-                sunIcon.style.display = "none";
-                moonIcon.style.display = "block";
-            } else {
-                sunIcon.style.display = "block";
-                moonIcon.style.display = "none";
-            }
-        }
-    }
 });

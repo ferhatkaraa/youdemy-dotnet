@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Youdemy.Models
 {
@@ -13,9 +14,11 @@ namespace Youdemy.Models
         [Display(Name = "Görünen İsim")]
         public string? DisplayName { get; set; }
 
-        [Url]
         [Display(Name = "Profil Resmi URL")]
         public string? ProfileImageUrl { get; set; }
+
+        [Display(Name = "Profil Resmi Yükle")]
+        public IFormFile? ProfileImageFile { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Mevcut Şifre")]

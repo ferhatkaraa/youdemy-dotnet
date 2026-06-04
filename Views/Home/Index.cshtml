@@ -11,15 +11,6 @@
     </p>
 </div>
 
-<!-- Custom Glassmorphic Search Form -->
-<form method="get" action="@Url.Action("Index", "Home")" class="search-container">
-    <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-    </svg>
-    <input type="text" name="search" value="@search" placeholder="Öğrenmek istediğiniz konuyu arayın (C#, CSS, DOM...)" class="form-control search-input" autocomplete="off" />
-    <button type="submit" class="btn btn-primary btn-sm search-btn">Ara</button>
-</form>
 
 @if (!Model.Any())
 {
@@ -39,7 +30,7 @@ else
         {
             <div class="glass-card course-card" onclick="window.location.href='@Url.Action("Details", "Courses", new { id = course.Id })'">
                     <div class="course-img-wrapper">
-                        <img src="@(string.IsNullOrEmpty(course.ImageUrl) ? "/images/course-default.png" : course.ImageUrl)" alt="@course.Title" style="width:100%;height:160px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.04);" />
+                        <img src="@(string.IsNullOrEmpty(course.ImageUrl) ? "/images/course-default.png" : course.ImageUrl)" alt="@course.Title" />
                     </div>
                 
                 <div class="course-meta">

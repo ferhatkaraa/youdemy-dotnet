@@ -5,10 +5,10 @@ namespace Youdemy.Models
 {
     public class AdminDashboardViewModel
     {
-        public IEnumerable<User> PendingTeachers { get; set; } = new List<User>();
-        public IEnumerable<User> Teachers { get; set; } = new List<User>();
-        public IEnumerable<User> Students { get; set; } = new List<User>();
-        public IEnumerable<User> AllUsers { get; set; } = new List<User>();
+        public int PendingTeachersCount { get; set; }
+        public int TeachersCount { get; set; }
+        public int StudentsCount { get; set; }
+        public int AllUsersCount { get; set; }
     }
 
     public class AdminUserCreateViewModel

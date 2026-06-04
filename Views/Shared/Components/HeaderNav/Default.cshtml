@@ -1,0 +1,67 @@
+@model Youdemy.ViewComponents.HeaderNavViewModel
+
+<ul class="nav-links">
+    @if (Model.IsAuthenticated)
+    {
+        if (Model.Role == Youdemy.Models.UserRole.Student.ToString())
+        {
+            <li>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Courses" && ViewContext.RouteData.Values["action"]?.ToString() == "MyCourses" ? "active" : "")" asp-controller="Courses" asp-action="MyCourses">Eğitimlerim</a>
+            </li>
+        }
+
+        if (Model.Role == Youdemy.Models.UserRole.Teacher.ToString())
+        {
+            <li>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Courses" && ViewContext.RouteData.Values["action"]?.ToString() == "Manage" ? "active" : "")" 
+                   asp-controller="Courses" asp-action="Manage">Kurslarım</a>
+            </li>
+        }
+        if (Model.Role == Youdemy.Models.UserRole.Admin.ToString())
+        {
+            <li>
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index">Admin</a>
+            </li>
+        }
+
+        <li>
+            <a class="nav-icon-btn @(ViewContext.RouteData.Values["controller"]?.ToString() == "Notifications" ? "active" : "")" 
+               asp-controller="Notifications" asp-action="Inbox" title="Bildirimler">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+                @if (Model.UnreadNotificationsCount > 0)
+                {
+                    <span class="nav-badge">@Model.UnreadNotificationsCount</span>
+                }
+            </a>
+        </li>
+        
+        <li>
+            <a asp-controller="Settings" asp-action="Edit" class="nav-user-profile" title="Profil Ayarları">
+                <img src="@(string.IsNullOrEmpty(Model.ProfileImage) ? "/images/user-default.png" : Model.ProfileImage)" alt="Profil" class="nav-user-avatar" />
+                <span style="display: flex; flex-direction: column;">
+                    <span style="font-size: 14px; font-weight: 600; line-height: 1.2;">@(!string.IsNullOrEmpty(Model.DisplayName) ? Model.DisplayName : Model.UserName)</span>
+                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 400; margin-top: 2px;">@(Model.Role == Youdemy.Models.UserRole.Teacher.ToString() ? "Eğitmen" : (Model.Role == Youdemy.Models.UserRole.Admin.ToString() ? "Yönetici" : "Öğrenci"))</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="nav-icon-btn nav-logout-btn" asp-controller="Auth" asp-action="Logout" title="Çıkış Yap">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+            </a>
+        </li>
+    }
+    else
+    {
+        <li>
+            <a class="nav-link" asp-controller="Auth" asp-action="Login">Giriş Yap</a>
+        </li>
+        <li>
+            <a class="btn btn-primary btn-sm" asp-controller="Auth" asp-action="Register">Kayıt Ol</a>
+        </li>
+    }
+</ul>

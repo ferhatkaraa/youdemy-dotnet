@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -78,7 +79,27 @@ namespace Youdemy.Controllers
 
             user.Username = model.Username;
             user.DisplayName = model.DisplayName;
-            user.ProfileImageUrl = model.ProfileImageUrl;
+
+            // Handle profile picture upload
+            if (model.ProfileImageFile != null && model.ProfileImageFile.Length > 0)
+            {
+                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "profiles");
+                if (!Directory.Exists(uploadsDir))
+                {
+                    Directory.CreateDirectory(uploadsDir);
+                }
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ProfileImageFile.FileName);
+                var filePath = Path.Combine(uploadsDir, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ProfileImageFile.CopyToAsync(stream);
+                }
+                user.ProfileImageUrl = "/uploads/profiles/" + fileName;
+            }
+            else if (!string.IsNullOrEmpty(model.ProfileImageUrl))
+            {
+                user.ProfileImageUrl = model.ProfileImageUrl;
+            }
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();

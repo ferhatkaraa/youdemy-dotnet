@@ -23,35 +23,70 @@ namespace Youdemy.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var pendingTeachers = await _context.Users
-                .Where(u => u.Role == UserRole.Teacher && !u.IsApproved)
-                .OrderBy(u => u.CreatedAt)
-                .ToListAsync();
+            var pendingTeachersCount = await _context.Users
+                .CountAsync(u => u.Role == UserRole.Teacher && !u.IsApproved);
 
-            var teachers = await _context.Users
-                .Where(u => u.Role == UserRole.Teacher && u.IsApproved)
-                .OrderBy(u => u.Username)
-                .ToListAsync();
+            var teachersCount = await _context.Users
+                .CountAsync(u => u.Role == UserRole.Teacher && u.IsApproved);
 
-            var students = await _context.Users
-                .Where(u => u.Role == UserRole.Student)
-                .OrderBy(u => u.Username)
-                .ToListAsync();
+            var studentsCount = await _context.Users
+                .CountAsync(u => u.Role == UserRole.Student);
 
-            var allUsers = await _context.Users
-                .OrderBy(u => u.Role)
-                .ThenBy(u => u.Username)
-                .ToListAsync();
+            var allUsersCount = await _context.Users.CountAsync();
 
             var model = new AdminDashboardViewModel
             {
-                PendingTeachers = pendingTeachers,
-                Teachers = teachers,
-                Students = students,
-                AllUsers = allUsers
+                PendingTeachersCount = pendingTeachersCount,
+                TeachersCount = teachersCount,
+                StudentsCount = studentsCount,
+                AllUsersCount = allUsersCount
             };
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsers(string search = "", string role = "PendingTeacher", int skip = 0, int take = 20)
+        {
+            var query = _context.Users.AsQueryable();
+
+            if (role != "All")
+            {
+                if (role == "PendingTeacher")
+                {
+                    query = query.Where(u => u.Role == UserRole.Teacher && !u.IsApproved);
+                }
+                else if (role == "Teacher")
+                {
+                    query = query.Where(u => u.Role == UserRole.Teacher && u.IsApproved);
+                }
+                else if (Enum.TryParse<UserRole>(role, out var parsedRole))
+                {
+                    query = query.Where(u => u.Role == parsedRole);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.ToLower();
+                query = query.Where(u => u.Username.ToLower().Contains(search) || u.Email.ToLower().Contains(search));
+            }
+
+            var totalCount = await query.CountAsync();
+            var users = await query.OrderByDescending(u => u.CreatedAt)
+                                   .Skip(skip)
+                                   .Take(take)
+                                   .Select(u => new {
+                                       id = u.Id,
+                                       username = u.Username,
+                                       email = u.Email,
+                                       role = u.Role.ToString(),
+                                       isApproved = u.IsApproved,
+                                       createdAt = u.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                                   })
+                                   .ToListAsync();
+
+            return Json(new { users, totalCount });
         }
 
         public IActionResult CreateUser()

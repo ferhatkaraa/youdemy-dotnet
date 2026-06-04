@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Youdemy.Models
 {
@@ -17,8 +18,11 @@ namespace Youdemy.Models
         [Display(Name = "Kurs Açıklaması")]
         public string Description { get; set; } = string.Empty;
 
-        [Display(Name = "Kapak Görseli (İsteğe Bağlı)")]
+        [Display(Name = "Kapak Görseli URL")]
         public string? ImageUrl { get; set; }
+
+        [Display(Name = "Kapak Görseli Yükle")]
+        public IFormFile? ImageFile { get; set; }
     }
 
     public class StudentCourseProgressViewModel

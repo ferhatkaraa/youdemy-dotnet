@@ -4,14 +4,14 @@
 }
 
 <div class="container" style="max-width: 1200px; margin: 40px auto;">
-    <div class="d-flex justify-content-between align-items-start mb-4 gap-3 flex-wrap">
+    <div class="page-header mb-4" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 32px;">
         <div>
-            <h2 class="mb-1">Admin Paneli</h2>
-            <p class="text-muted mb-0">Tüm kullanıcıları tek bir tabloda görüntüleyin, hızlıca filtreleyin ve hesap yönetimini kolaylaştırın.</p>
+            <h1 class="page-title">Admin Paneli</h1>
+            <p class="page-desc">Tüm kullanıcıları tek bir tabloda görüntüleyin, hızlıca filtreleyin ve hesap yönetimini kolaylaştırın.</p>
         </div>
-        <div class="btn-toolbar gap-2">
+        <div style="display: flex; gap: 12px;">
             <a asp-action="CreateUser" class="btn btn-primary">Yeni Kullanıcı Oluştur</a>
-            <a asp-action="SendNotification" class="btn btn-outline-secondary">Bildirim Gönder</a>
+            <a asp-action="SendNotification" class="btn" style="background: rgba(148,163,184,0.15); color: var(--text-main); text-decoration: none; padding: 12px 24px; border-radius: var(--border-radius-md); font-weight: 500;">Bildirim Gönder</a>
         </div>
     </div>
 
@@ -20,150 +20,187 @@
         <div class="alert alert-success">@TempData["SuccessMessage"]</div>
     }
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <div class="row gy-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label">Kullanıcı Ara</label>
-                    <input id="userSearch" type="text" class="form-control" placeholder="Kullanıcı adı, e-posta veya rol..." oninput="filterUsers()" />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Rol</label>
-                    <select id="roleFilter" class="form-select" onchange="filterUsers()">
-                        <option value="All">Tümü</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Teacher">Öğretmen</option>
-                        <option value="Student">Öğrenci</option>
-                        <option value="PendingTeacher">Onay Bekleyen Öğretmen</option>
-                    </select>
-                </div>
-                <div class="col-md-5">
-                    <label class="form-label">Durum</label>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <span class="badge bg-success">Onaylı Öğretmen: @Model.Teachers.Count()</span>
-                        <span class="badge bg-warning text-dark">Bekleyen Öğretmen: @Model.PendingTeachers.Count()</span>
-                        <span class="badge bg-info text-dark">Öğrenci: @Model.Students.Count()</span>
-                    </div>
+    <div class="glass-card mb-4" style="padding: 24px; margin-bottom: 32px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; align-items: flex-end;">
+            <div>
+                <label class="form-label">Kullanıcı Ara</label>
+                <input id="userSearch" type="text" class="form-control" placeholder="Kullanıcı adı, e-posta veya rol..." oninput="filterUsers()" />
+            </div>
+            <div>
+                <label class="form-label">Rol</label>
+                <select id="roleFilter" class="form-select" onchange="filterUsers()" style="width: 100%; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); background-color: var(--bg-input); color: var(--text-main); padding: 12px 16px; font-size: 15px;">
+                    <option value="All">Tümü</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Teacher">Öğretmen</option>
+                    <option value="Student">Öğrenci</option>
+                    <option value="PendingTeacher">Onay Bekleyen Öğretmen</option>
+                </select>
+            </div>
+            <div style="grid-column: span 2;">
+                <label class="form-label">Durum</label>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <span style="background: rgba(16,185,129,0.15); color: #059669; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">Onaylı Öğretmen: @Model.TeachersCount</span>
+                    <span style="background: rgba(245,158,11,0.15); color: #d97706; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">Bekleyen Öğretmen: @Model.PendingTeachersCount</span>
+                    <span style="background: rgba(14,165,233,0.15); color: #0ea5e9; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">Öğrenci: @Model.StudentsCount</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card shadow-sm overflow-hidden">
-        <div class="card-header bg-white border-bottom">
-            <h5 class="mb-0">Kullanıcılar</h5>
+    <div class="glass-card overflow-hidden" style="padding: 0;">
+        <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
+            <h5 style="margin: 0; font-size: 18px; font-weight: 600;">Kullanıcılar</h5>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover mb-0" id="usersTable">
-                <thead class="table-light">
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;" id="usersTable">
+                <thead style="background: rgba(0,0,0,0.02);">
                     <tr>
-                        <th style="width: 5%;">ID</th>
-                        <th style="width: 15%;">Kullanıcı Adı</th>
-                        <th style="width: 20%;">E-posta</th>
-                        <th style="width: 10%;">Rol</th>
-                        <th style="width: 15%;">Onay Durumu</th>
-                        <th style="width: 20%;">Oluşturma Tarihi</th>
-                        <th style="width: 15%;">İşlemler</th>
+                        <th style="padding: 16px 24px; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">ID</th>
+                        <th style="padding: 16px 24px; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">Kullanıcı Adı</th>
+                        <th style="padding: 16px 24px; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">E-posta</th>
+                        <th style="padding: 16px 24px; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">Rol</th>
+                        <th style="padding: 16px 24px; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">Onay Durumu</th>
+                        <th style="padding: 16px 24px; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">Oluşturma Tarihi</th>
+                        <th style="padding: 16px 24px; font-weight: 600; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">İşlemler</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach (var user in Model.AllUsers)
-                    {
-                        <tr data-role="@user.Role" data-approved="@(user.Role == Youdemy.Models.UserRole.Teacher ? user.IsApproved.ToString().ToLower() : "true")">
-                            <td>@user.Id</td>
-                            <td><strong>@user.Username</strong></td>
-                            <td>@user.Email</td>
-                            <td>@user.Role</td>
-                            <td>
-                                @if (user.Role == Youdemy.Models.UserRole.Teacher)
-                                {
-                                    @if (user.IsApproved)
-                                    {
-                                        <span class="badge bg-success">Onaylı</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning text-dark">Beklemede</span>
-                                    }
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">@user.Role</span>
-                                }
-                            </td>
-                            <td>@user.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
-                            <td>
-                                @if (user.Role == Youdemy.Models.UserRole.Teacher && !user.IsApproved)
-                                {
-                                    <form asp-action="ApproveTeacher" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@user.Id" />
-                                        <button type="submit" class="btn btn-sm btn-success">Onayla</button>
-                                    </form>
-                                }
-                                else
-                                {
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled>İşlem Yok</button>
-                                }
-                            </td>
-                        </tr>
-                    }
+                <tbody id="usersTbody">
                 </tbody>
             </table>
+            <div id="loadingIndicator" style="text-align: center; padding: 20px; display: none;">
+                <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+            </div>
+            <div id="scrollSentinel" style="height: 10px;"></div>
         </div>
     </div>
 
-    <div class="row gy-4 mt-4">
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6>Kısa Bakış</h6>
-                    <p class="mb-1"><strong>@Model.AllUsers.Count()</strong> toplam kullanıcı</p>
-                    <p class="mb-1"><strong>@Model.Students.Count()</strong> öğrenci</p>
-                    <p class="mb-1"><strong>@Model.Teachers.Count()</strong> onaylı öğretmen</p>
-                    <p class="mb-0"><strong>@Model.PendingTeachers.Count()</strong> onay bekleyen öğretmen</p>
-                </div>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-top: 32px;">
+        <div class="glass-card" style="padding: 24px;">
+            <h6 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Kısa Bakış</h6>
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
+                <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Toplam Kullanıcı</span><strong style="font-size: 16px;">@Model.AllUsersCount</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Öğrenci</span><strong style="font-size: 16px;">@Model.StudentsCount</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Onaylı Öğretmen</span><strong style="font-size: 16px;">@Model.TeachersCount</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Bekleyen Öğretmen</span><strong style="font-size: 16px; color: #d97706;">@Model.PendingTeachersCount</strong></div>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6>Yönetim Notları</h6>
-                    <p class="text-muted">Onay bekleyen öğretmen hesapları burada listelenir. Yönetici olarak hızlıca onay verebilir ve bildirim gönderim sayfasına geçiş yapabilirsiniz.</p>
-                </div>
-            </div>
+        <div class="glass-card" style="padding: 24px;">
+            <h6 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Yönetim Notları</h6>
+            <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Onay bekleyen öğretmen hesapları burada listelenir. Yönetici olarak hızlıca onay verebilir ve bildirim gönderim sayfasına geçiş yapabilirsiniz.</p>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <div id="tokenContainer" style="display:none;">
+        @Html.AntiForgeryToken()
+    </div>
     <script>
+        let skip = 0;
+        const take = 15;
+        let currentRole = "PendingTeacher";
+        let currentSearch = "";
+        let isLoading = false;
+        let hasMore = true;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('roleFilter').value = 'PendingTeacher';
+            loadUsers(true);
+
+            const sentinel = document.getElementById("scrollSentinel");
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !isLoading && hasMore) {
+                    loadUsers(false);
+                }
+            }, { rootMargin: "100px" });
+            observer.observe(sentinel);
+        });
+
         function filterUsers() {
-            const search = document.getElementById('userSearch').value.toLowerCase();
-            const role = document.getElementById('roleFilter').value;
-            const rows = document.querySelectorAll('#usersTable tbody tr');
+            currentSearch = document.getElementById('userSearch').value;
+            currentRole = document.getElementById('roleFilter').value;
+            loadUsers(true);
+        }
 
-            rows.forEach(row => {
-                const username = row.cells[1].textContent.toLowerCase();
-                const email = row.cells[2].textContent.toLowerCase();
-                const roleValue = row.getAttribute('data-role');
-                const approved = row.getAttribute('data-approved');
-                let visible = true;
+        async function loadUsers(reset = false) {
+            if (isLoading) return;
+            if (reset) {
+                skip = 0;
+                hasMore = true;
+                document.getElementById('usersTbody').innerHTML = "";
+            }
+            if (!hasMore) return;
 
-                if (search) {
-                    visible = username.includes(search) || email.includes(search) || roleValue.toLowerCase().includes(search);
+            isLoading = true;
+            document.getElementById('loadingIndicator').style.display = "block";
+
+            try {
+                const response = await fetch(`/Admin/GetUsers?search=${encodeURIComponent(currentSearch)}&role=${currentRole}&skip=${skip}&take=${take}`);
+                const data = await response.json();
+
+                const tbody = document.getElementById('usersTbody');
+                
+                if (data.users.length === 0 && reset) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">Kullanıcı bulunamadı.</td></tr>`;
                 }
 
-                if (visible && role !== 'All') {
-                    if (role === 'PendingTeacher') {
-                        visible = roleValue === 'Teacher' && approved === 'false';
+                const token = document.querySelector('#tokenContainer input[name="__RequestVerificationToken"]').value;
+
+                data.users.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = "1px solid var(--border-color)";
+                    tr.style.transition = "background-color 0.2s";
+                    tr.onmouseover = () => tr.style.backgroundColor = 'rgba(0,0,0,0.02)';
+                    tr.onmouseout = () => tr.style.backgroundColor = 'transparent';
+
+                    let statusBadge = "";
+                    if (user.role === "Teacher") {
+                        if (user.isApproved) {
+                            statusBadge = `<span style="background: rgba(16,185,129,0.15); color: #059669; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Onaylı</span>`;
+                        } else {
+                            statusBadge = `<span style="background: rgba(245,158,11,0.15); color: #d97706; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Beklemede</span>`;
+                        }
                     } else {
-                        visible = roleValue === role;
+                        statusBadge = `<span style="background: rgba(148,163,184,0.15); color: var(--text-muted); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">${user.role}</span>`;
                     }
-                }
 
-                row.style.display = visible ? '' : 'none';
-            });
+                    let actionHtml = "";
+                    if (user.role === "Teacher" && !user.isApproved) {
+                        actionHtml = `
+                            <form action="/Admin/ApproveTeacher" method="post" class="d-inline">
+                                <input type="hidden" name="__RequestVerificationToken" value="${token}" />
+                                <input type="hidden" name="id" value="${user.id}" />
+                                <button type="submit" class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;">Onayla</button>
+                            </form>
+                        `;
+                    } else {
+                        actionHtml = `<span style="color: var(--text-muted); font-size: 13px;">İşlem Yok</span>`;
+                    }
+
+                    tr.innerHTML = `
+                        <td style="padding: 16px 24px; font-size: 14px;">${user.id}</td>
+                        <td style="padding: 16px 24px; font-size: 14px; font-weight: 600;">${user.username}</td>
+                        <td style="padding: 16px 24px; font-size: 14px; color: var(--text-muted);">${user.email}</td>
+                        <td style="padding: 16px 24px; font-size: 14px;">${user.role}</td>
+                        <td style="padding: 16px 24px; font-size: 14px;">${statusBadge}</td>
+                        <td style="padding: 16px 24px; font-size: 14px; color: var(--text-muted);">${user.createdAt}</td>
+                        <td style="padding: 16px 24px; font-size: 14px;">${actionHtml}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                skip += take;
+                if (skip >= data.totalCount) {
+                    hasMore = false;
+                }
+            } catch (err) {
+                console.error("Hata:", err);
+            } finally {
+                isLoading = false;
+                document.getElementById('loadingIndicator').style.display = "none";
+            }
         }
     </script>
 }
